@@ -24,4 +24,16 @@ function filter( item ) {
   return ( electric_cars ) ? true : false;
 }
 
-new ComboBox( document.querySelector( 'input#itcities' ), [], { endpoint: 'http://localhost' } );
+new ComboBox( document.querySelector( 'input#itcities' ), [], { api: { endpoint: 'http://localhost/www/www.parkandfly.com/www/api/?method=getitcities&q=', callback: returnItems } } );
+
+function returnItems( json ) {
+  let itcities = [];
+  if( json.Status === '00' && json.Itcities ) {
+    itcities = json.Itcities.map( item => {
+      return { id: item.CC, name: item.CityName, descr: item.Descr }
+    } );
+  }
+
+  console.log(itcities);
+  return itcities;
+}

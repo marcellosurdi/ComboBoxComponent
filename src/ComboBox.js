@@ -6,7 +6,7 @@
  * @param {object|string} items Default items to show in a list
  * @param {options} [options] Configuration object
  */
-export default function ComboBox( input, items, options = { onFilter: null, onSelect: null, endpoint: '', hbg: '' } ) {
+export default function ComboBox( input, items, options = { onFilter: null, onSelect: null, api: {}, hbg: '' } ) {
 	this.items = items;
 
   input.parentElement.style.position = 'relative';
@@ -35,7 +35,7 @@ export default function ComboBox( input, items, options = { onFilter: null, onSe
 
   if( options.onSelect ) this.onSelect = options.onSelect;
   if( options.onFilter ) this.onFilter = options.onFilter;
-  if( options.endpoint ) this.endpoint = options.endpoint;
+  if( options.api ) this.api = options.api;
 }
 
 /**
@@ -59,8 +59,18 @@ const ComboBoxBase = {
   onKey: function ( e ) {
     const str = this.processKeyboardEvents( e );
 
-    if( this.endpoint && e.type === 'keyup' ) {
+    if( this.api && e.type === 'keyup' ) {
+      const { endpoint, callback } = this.api;
 
+      if( str.length >= 3 ) {
+        fetch( endpoint + str )
+          .then( r => r.json() )
+          .then( json => {
+            this.items = callback( json );
+            if( this.items.length > 0 ) this.open( str );
+          } )
+          .catch( e => console.warn( e ) );
+      }
     }
 		else if( str !== undefined ) {
 			this.open( str );
