@@ -1,5 +1,5 @@
-# Autocomplete Component
-AutocompleteComponent is a very lightweight and dependency-free web component written in pure JavaScript.
+# ComboBoxComponent
+ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.
 
 ## Usage
 Make sure that you have [Node.js](http://nodejs.org/) installed, then:
