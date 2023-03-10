@@ -167,6 +167,9 @@ const ComboBoxBase = {
     // Show highlighted item first in the list
     div.firstElementChild.scrollTop = current_li.offsetTop;
 
+    // Sfruttare la variabile current_li e poi cambiarla insieme a x e y
+    // La condizione `previous_li !== current_li` in alcuni casi dà problemi
+    // @todo keydown event
     let x, y;
     div.firstElementChild.onmouseover = ( e ) => {
       const previous_li = div.querySelector( 'li.highlighted' );
