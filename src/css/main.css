@@ -1,0 +1,10 @@
+* { box-sizing: border-box; }
+html, body, input { font: 100% arial; }
+body > div { margin: 20px auto; max-width: 768px; }
+label { display: block; padding-bottom: 5px; }
+input { border: 1px solid #ccc; padding: 10px; width: 100%; }
+input:focus { background-color: #efefef; outline: 0; }
+
+.icon-airport { background-image: url(../img/icons.svg); background-position: 0 0; }
+.icon-railway-station { background-image: url(../img/icons.svg); background-position: -40px 0; }
+.icon-port { background-image: url(../img/icons.svg); background-position: -80px 0; }

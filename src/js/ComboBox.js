@@ -1,41 +1,44 @@
 /**
- * Create a new ComboBox instance for the text field parameter (`input`).
+ * Create a new ComboBox instance for the text field selected by `id` parameter.
  * 
  * @class
- * @param {HTMLInputElement} input Text field DOM object
- * @param {object|string} items Default items to show in a list
+ * @param {string} id Text field id value
  * @param {options} [options] Configuration object
  */
-export default function ComboBox( input, items, options = { onFilter: null, onSelect: null, api: {}, hbg: '' } ) {
-	this.items = items;
+export default function ComboBox( id, options = {} ) {
+  const input = document.querySelector( `input#${ id }[type="text"]` );
+  if( input === null ) {
+    console.error( "Please provide a text field valid id ('type' html attribute must be set to 'text')" );
+    return;
+  }
 
-  input.parentElement.style.position = 'relative';
-  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" data-item-name value>` );
+  this.input = input;
+  this.items = options.items || [];
+  this.onSelect = options.onSelect || null;
+  this.onFilter = options.onFilter || null;
+  this.onFetch = options.onFetch || null;
+  this.endpoint = options.endpoint || '';
+  this.controller = undefined;
+  this.highlight_color = options.highlight_color || '';
+
+  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value data-item-name>` );
   input.insertAdjacentHTML( 'afterend', `<div id="${ input.id }-div" class="combobox"></div>`);
 
   // Hidden input that will contain selected item id and name
   this.hinput = input.previousElementSibling;
-	this.input = input;
   // Div element that will contain the list
   this.div = input.nextElementSibling;
-  // Custom highlighted background
-  if( options.hbg ) {
-    this.div.insertAdjacentHTML( 'afterend', 
-      `<style>
-        div#${ input.id }-div li.highlighted { background: ${ options.hbg }; }
-        div#${ input.id }-div li:not(.highlighted):hover { background: ${ options.hbg }; }
-      </style>`
+  // Set custom highlight color if any
+  if( this.highlight_color ) {
+    this.div.insertAdjacentHTML( 
+      'afterend', 
+      `<style>div#${ input.id }-div li.highlighted { background: ${ this.highlight_color }; }</style>`
     );
   }
 
   input.addEventListener( 'focus', () => { this.onFocus() } );
-  input.addEventListener( 'keydown', ( e ) => { this.onKey( e ) } );
   input.addEventListener( 'keyup', ( e ) => { this.onKey( e ) } );
   input.addEventListener( 'blur', ( e ) => { this.onBlur( e ) } );
-
-  if( options.onSelect ) this.onSelect = options.onSelect;
-  if( options.onFilter ) this.onFilter = options.onFilter;
-  if( options.api ) this.api = options.api;
 }
 
 /**
@@ -45,46 +48,68 @@ const ComboBoxBase = {
   constructor: ComboBox,
 
  	/**
-	 * Focus event simply opens list if `this.items` are more than 0.
+	 * Open the list.
 	 */
   onFocus: function() { 
-    if( this.items.length > 0 ) this.open();
+    this.open();
   },
 
 	/**
-	 * Keyboard events update the list.
+	 * Update the list, if `this.endpoint` configuration option exists try to fetch `this.items` from a remote endpoint 
+   * and then update the list.
 	 *
 	 * @param {KeyboardEvent} e
 	 */
   onKey: function ( e ) {
-    const str = this.processKeyboardEvents( e );
+    if( !this.processKeyboardEvents( e ) ) return;
 
-    if( this.api && e.type === 'keyup' ) {
-      const { endpoint, callback } = this.api;
+    if( this.endpoint ) {
+      const str = this.input.value;
 
       if( str.length >= 3 ) {
-        fetch( endpoint + str )
+
+        let signal;
+
+        if( this.controller !== undefined ) {
+          this.controller.abort();
+        }
+
+        if( 'AbortController' in window ) {
+          this.controller = new AbortController;
+          signal = this.controller.signal;
+        }
+
+        fetch( this.endpoint + str, { signal } )
           .then( r => r.json() )
           .then( json => {
-            this.items = callback( json );
-            if( this.items.length > 0 ) this.open( str );
+            this.items = this.onFetch ? this.onFetch( json ) : json;
+            this.open();
           } )
-          .catch( e => console.warn( e ) );
+          .catch( e => {
+            if( e.name === 'AbortError' ) {
+              console.log( `Uneccessary fetch aborted for '${ str }' string` );
+            }
+            console.warn( e );
+          } );
+
       }
     }
-		else if( str !== undefined ) {
-			this.open( str );
+		else {
+			this.open();
 		}
   },
 
 	/**
-	 * Create the list and show it in the div, this method is executed whenever the text field receives the focus or user types something.
-   * Execute `this.onFilter` if any.
-	 *
-	 * @param {string} [str = ''] String typed by user
+	 * Create the list from `this.items` and show it (this method is executed whenever the text field receives the focus 
+   * or user types something). Execute `this.onFilter` if any.
 	 */
-  open: function( str = '' ) {
+  open: function() {
     const items = this.items;
+    // Return if `this.items` are less than 0
+    if( items.length === 0 ) return;
+    
+    // String typed by user
+    const str = this.input.value;
     const div = this.div;
 
     // Previously selected id
@@ -97,20 +122,21 @@ const ComboBoxBase = {
     for( const item of items ) {
       if( this.onFilter && !this.onFilter( item ) ) continue;
 
-      let { id, name, descr } = item;
+      let { id, name, descr, icon } = item;
 
-      // There isn't previous selection so considers first item
+      // There isn't previous selection so consider first item
       if( sid === '' ) {
         sid = id;
       }
 
-			if( str !== '' && str.length >= 3 ) {
+      let rname = name;
+			if( str.length >= 3 ) {
 				// String.indexOf is case-sensitive
 				let pos = name.toLowerCase().indexOf( str.toLowerCase() );
 
 				// String typed by the user matches a list item
         if( pos !== -1 ) {
-          name = name.substring( 0, pos ) + '<strong>' + name.substring( pos, str.length ) + '</strong>' + name.substring( ( pos + str.length ), name.length );
+          rname = name.replace( new RegExp( `${ str }`, 'i' ), `<strong>${ str }</strong>` );
           
           if( !fid ) {
             fid = id;
@@ -120,8 +146,11 @@ const ComboBoxBase = {
 
 			html += `<li class="${ 'item' + id }">`;
       html +=   `<button type="button" class="combobox-button" data-item-id="${ id }" data-item-name="${ name }" data-item-descr="${ descr }" tabindex="-1">`;
-			html += 	  `<span class="item-name">${ name }</span>`;
+			html += 	  `<span class="item-name">${ rname }</span>`;
 			html += 	  `<span class="item-desc">${ descr }</span>`;
+      if( icon ) {
+        html += 	`<span class="icon-${ icon }"></span>`;
+      }
       html +=   '</button>';
 			html += '</li>';
 		}
@@ -130,7 +159,7 @@ const ComboBoxBase = {
 		div.innerHTML = html;
 		div.style.display = 'block';
 
-    // Highligth the found item while typing, if any, instead of previously selected one
+    // Highligth the found item while typing, if any, or previously selected one
     const current_id = fid || sid;
     const current_li = div.querySelector( 'li.item' + current_id );
     current_li.classList.add( 'highlighted' );
@@ -138,11 +167,23 @@ const ComboBoxBase = {
     // Show highlighted item first in the list
     div.firstElementChild.scrollTop = current_li.offsetTop;
 
+    let x, y;
+    div.firstElementChild.onmouseover = ( e ) => {
+      const previous_li = div.querySelector( 'li.highlighted' );
+      const current_li = e.target.closest( 'li' );
+      if( previous_li !== current_li && x !== e.pageX && y !== e.pageY ) {
+        this.highlight( previous_li, current_li );
+        x = e.pageX;
+        y = e.pageY;
+      }
+    };
+
     this.scrollPage( div );
   },
 
  	/**
-	 * Remove `highlighted` class in the previous `li` item and add it in the current one.
+	 * When user hovers the mouse over an item, or click on it, or uses the arrow up or arrow down keys on the keyboard,
+   * remove `highlighted` class in the previous `li` item and add it in the current one.
 	 *
 	 * @param {HTMLLIElement} previous_li
 	 * @param {HTMLLIElement} current_li
@@ -159,15 +200,14 @@ const ComboBoxBase = {
 	 */
   select: function( li ) {
     const btn = li.querySelector( 'button' );
-    const txt = btn.querySelector( 'span.item-name' ).textContent;
     this.hinput.value = btn.dataset.itemId;
-    this.input.value = this.hinput.dataset.itemName = txt;
+    this.input.value = this.hinput.dataset.itemName = btn.dataset.itemName;
 
     if( this.onSelect ) this.onSelect( li );
   },
 
  	/**
-	 * Blur event closes list.
+	 * Close the list.
 	 *
 	 * @param {FocusEvent} e
 	 */
@@ -193,10 +233,10 @@ const ComboBoxBase = {
   },
 
 	/**
-	 * Method executed whenever the user types something on the text field.
+	 * Process `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys.
 	 *
 	 * @param {KeyboardEvent} e
-	 * @return undefined|string
+	 * @return {string|undefined} The value of the key pressed by the user or `undefined`
 	 */
 	processKeyboardEvents: function( e ) {
 		const input = this.input;
@@ -204,37 +244,30 @@ const ComboBoxBase = {
     const current_li = div.querySelector( 'li.highlighted' );
     const k = standardizeKey( e );
     
-		if( e.type === 'keydown' ) {
-      if( k === 'Enter' || k === 'Escape' ) {
-        e.preventDefault();
-        
-        if( k === 'Enter' ) { this.select( current_li ); }
-        input.blur();
-			}
-		}
-    else {
-      if( k === 'ArrowDown' || k === 'ArrowUp' ) {
-				let new_li = ( k === 'ArrowDown' ) ? current_li.nextElementSibling : current_li.previousElementSibling;
+    if( k === 'Enter' || k === 'Escape' ) {
+      e.preventDefault();
+      
+      if( k === 'Enter' ) { this.select( current_li ); }
+      input.blur();
+    }
+    else if( k === 'ArrowDown' || k === 'ArrowUp' ) {
+      let new_li = ( k === 'ArrowDown' ) ? current_li.nextElementSibling : current_li.previousElementSibling;
+      
+      // If there's a next item or a previous item
+      if( new_li ) {
+        const ul = div.firstElementChild;
 
-        // If there's a next item or a previous item
-				if( new_li ) {
-          const ul = div.firstElementChild;
+        this.highlight( current_li, new_li );
 
-					this.highlight( current_li, new_li );
-
-					if( k == 'ArrowDown' && ( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) ) {
-						ul.scrollTop = new_li.offsetTop - ( div.offsetHeight - new_li.offsetHeight );
-					}
-          else if( k == 'ArrowUp' && new_li.offsetTop < ul.scrollTop ) {
-						ul.scrollTop = new_li.offsetTop;
-					}
-				}
-			}
-			// If the user types any other key, returns the text field value
-			else {
-				return input.value;
-			}
-		}
+        if( k == 'ArrowDown' && ( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) ) {
+          ul.scrollTop = new_li.offsetTop - ( div.offsetHeight - new_li.offsetHeight );
+        }
+        else if( k == 'ArrowUp' && new_li.offsetTop < ul.scrollTop ) {
+          ul.scrollTop = new_li.offsetTop;
+        }
+      }
+    }
+    else return k;
 
     // Standardize event.key IE/Edge values
 		function standardizeKey( e ) {

@@ -4,27 +4,27 @@
  * @desc
  * Entry point
  */
-import './main.css';
-import './combobox.scss';
-import { offices } from './offices';
-import ComboBox from './ComboBox';
+import './css/main.css';
+import './css/combobox.scss';
+import { offices } from './js/offices';
+import ComboBox from './js/ComboBox';
 
-new ComboBox( document.querySelector( 'input#pickup-input' ), offices, { onSelect: sync } );
+new ComboBox( 'pickup-input', { items: offices, onSelect: sync } );
 
-const dropoff = new ComboBox( document.querySelector( 'input#dropoff-input' ), offices );
+const dropoff = new ComboBox( 'dropoff-input', { items: offices } );
 
 function sync( li ) {
   dropoff.select( li );
 }
 
-new ComboBox( document.querySelector( 'input#green-location' ), offices, { onFilter: filter, hbg: '#ffc' } );
+new ComboBox( 'green-location', { items: offices, onFilter: filter, highlight_color: '#ffc' } );
 
 function filter( item ) {
   const { electric_cars } = item;
   return ( electric_cars ) ? true : false;
 }
 
-new ComboBox( document.querySelector( 'input#itcities' ), [], { api: { endpoint: 'http://localhost/www/www.parkandfly.com/www/api/?method=getitcities&q=', callback: returnItems } } );
+new ComboBox( 'itcities', { endpoint: 'http://localhost/www/www.parkandfly.com/www/api/?method=getitcities&q=', onFetch: returnItems } );
 
 function returnItems( json ) {
   let itcities = [];
@@ -34,6 +34,6 @@ function returnItems( json ) {
     } );
   }
 
-  console.log(itcities);
+  // console.log(itcities);
   return itcities;
 }
