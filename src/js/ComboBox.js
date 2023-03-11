@@ -37,7 +37,7 @@ export default function ComboBox( id, options = {} ) {
   }
 
   input.addEventListener( 'focus', () => { this.onFocus() } );
-  input.addEventListener( 'keyup', ( e ) => { this.onKey( e ) } );
+  input.addEventListener( 'keydown', ( e ) => { this.onKey( e ) } );
   input.addEventListener( 'blur', ( e ) => { this.onBlur( e ) } );
 }
 
@@ -167,17 +167,12 @@ const ComboBoxBase = {
     // Show highlighted item first in the list
     div.firstElementChild.scrollTop = current_li.offsetTop;
 
-    // Sfruttare la variabile current_li e poi cambiarla insieme a x e y
-    // La condizione `previous_li !== current_li` in alcuni casi dà problemi
-    // @todo keydown event
-    let x, y;
-    div.firstElementChild.onmouseover = ( e ) => {
+    div.firstElementChild.onmousemove = ( e ) => {
       const previous_li = div.querySelector( 'li.highlighted' );
       const current_li = e.target.closest( 'li' );
-      if( previous_li !== current_li && x !== e.pageX && y !== e.pageY ) {
+      // `current_li` variable may not exist if mouse goes out from window
+      if( current_li && previous_li !== current_li ) {
         this.highlight( previous_li, current_li );
-        x = e.pageX;
-        y = e.pageY;
       }
     };
 
@@ -185,8 +180,8 @@ const ComboBoxBase = {
   },
 
  	/**
-	 * When user hovers the mouse over an item, or click on it, or uses the arrow up or arrow down keys on the keyboard,
-   * remove `highlighted` class in the previous `li` item and add it in the current one.
+   * Remove `highlighted` class in the previous `li` item and add it in the current one (when user hovers the mouse over an item, or click on 
+   * it, or uses the arrow up or arrow down keys on the keyboard).
 	 *
 	 * @param {HTMLLIElement} previous_li
 	 * @param {HTMLLIElement} current_li
@@ -262,17 +257,17 @@ const ComboBoxBase = {
 
         this.highlight( current_li, new_li );
 
-        if( k == 'ArrowDown' && ( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) ) {
+        if( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) {
           ul.scrollTop = new_li.offsetTop - ( div.offsetHeight - new_li.offsetHeight );
         }
-        else if( k == 'ArrowUp' && new_li.offsetTop < ul.scrollTop ) {
+        else if( new_li.offsetTop < ul.scrollTop ) {
           ul.scrollTop = new_li.offsetTop;
         }
       }
     }
     else return k;
 
-    // Standardize event.key IE/Edge values
+    // Standardize event.key Edge values
 		function standardizeKey( e ) {
 			let k = e.key;
 

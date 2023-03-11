@@ -1,7 +1,7 @@
 {
-  "name": "autocomplete-component",
-  "description": "AutocompleteComponent is a very lightweight and dependency-free web component written in pure JavaScript.",
-  "version": "0.0.2",
+  "name": "combobox-component",
+  "description": "ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.",
+  "version": "1.0.0",
   "keywords": [],
   "main": "main.js",
   "repository": {},
