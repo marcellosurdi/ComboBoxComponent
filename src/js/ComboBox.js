@@ -37,7 +37,8 @@ export default function ComboBox( id, options = {} ) {
   }
 
   input.addEventListener( 'focus', () => { this.onFocus() } );
-  input.addEventListener( 'keydown', ( e ) => { this.onKey( e ) } );
+  input.addEventListener( 'keydown', ( e ) => { this.onKeyDown( e ) } );
+  input.addEventListener( 'keyup', ( e ) => { this.onKeyUp( e ) } );
   input.addEventListener( 'blur', ( e ) => { this.onBlur( e ) } );
 }
 
@@ -55,13 +56,56 @@ const ComboBoxBase = {
   },
 
 	/**
-	 * Update the list, if `this.endpoint` configuration option exists try to fetch `this.items` from a remote endpoint 
+	 * Process `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys when keydown events are fired.
+	 *
+	 * @param {KeyboardEvent} e
+	 */
+	onKeyDown: function( e ) {
+    const k = this.standardizeKey( e );
+
+		const input = this.input;
+    const div = this.div;
+    const current_li = div.querySelector( 'li.highlighted' );
+    // `current_li` element isn't available because `this.div` wasn't inizialized yet
+    if( !current_li ) return;
+
+    
+    if( k === 'Enter' || k === 'Escape' ) {
+      e.preventDefault();
+
+      if( k === 'Enter' ) this.select( current_li );
+      input.blur();
+    }
+    else if( k === 'ArrowDown' || k === 'ArrowUp' ) {
+      let new_li = ( k === 'ArrowDown' ) ? current_li.nextElementSibling : current_li.previousElementSibling;
+      
+      // If there's a next item or a previous item
+      if( new_li ) {
+        const ul = div.firstElementChild;
+
+        this.highlight( current_li, new_li );
+
+        if( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) {
+          ul.scrollTop = new_li.offsetTop - ( div.offsetHeight - new_li.offsetHeight );
+        }
+        else if( new_li.offsetTop < ul.scrollTop ) {
+          ul.scrollTop = new_li.offsetTop;
+        }
+      }
+    }
+	},
+
+	/**
+	 * Update the list according to user input, if `this.endpoint` configuration option exists try to fetch `this.items` from a remote endpoint 
    * and then update the list.
 	 *
 	 * @param {KeyboardEvent} e
 	 */
-  onKey: function ( e ) {
-    if( !this.processKeyboardEvents( e ) ) return;
+  onKeyUp: function ( e ) {
+    const k = this.standardizeKey( e );
+
+    // `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys are processed only when keydown events are fired
+    if( k === 'Enter' || k === 'Escape' || k === 'ArrowDown' || k === 'ArrowUp'  ) return;
 
     if( this.endpoint ) {
       const str = this.input.value;
@@ -97,6 +141,32 @@ const ComboBoxBase = {
 		else {
 			this.open();
 		}
+  },
+
+ 	/**
+	 * Close the list.
+	 *
+	 * @param {FocusEvent} e
+	 */
+   onBlur: function ( e ) {
+    // https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function/57983847#57983847
+    const rt = e.relatedTarget;
+
+    if( rt !== this.input ) {
+      // Close list
+      this.div.style.display = 'none';
+
+      // If the user clicked on a `li > button`
+      if( rt && rt.classList.contains( 'combobox-button' ) ) {
+        const previous_li = this.div.querySelector( 'li.highlighted' );
+        const current_li = rt.parentElement;
+        this.highlight( previous_li, current_li );
+        this.select( current_li );
+      }
+
+      // Restore the text field value if the user cleared it (even partially) without making a new selection
+      this.input.value = this.hinput.dataset.itemName;
+    }
   },
 
 	/**
@@ -204,82 +274,23 @@ const ComboBoxBase = {
     if( this.onSelect ) this.onSelect( li );
   },
 
- 	/**
-	 * Close the list.
-	 *
-	 * @param {FocusEvent} e
-	 */
-  onBlur: function ( e ) {
-    // https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function/57983847#57983847
-    const rt = e.relatedTarget;
-
-    if( rt !== this.input ) {
-      // Close list
-      this.div.style.display = 'none';
-
-      // If the user clicked on a `li > button`
-      if( rt && rt.classList.contains( 'combobox-button' ) ) {
-        const previous_li = this.div.querySelector( 'li.highlighted' );
-        const current_li = rt.parentElement;
-        this.highlight( previous_li, current_li );
-        this.select( current_li );
-      }
-
-      // Restore the text field value if the user cleared it (even partially) without making a new selection
-      this.input.value = this.hinput.dataset.itemName;
-    }
-  },
-
 	/**
-	 * Process `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys.
+	 * Standardize event.key Edge values.
 	 *
 	 * @param {KeyboardEvent} e
-	 * @return {string|undefined} The value of the key pressed by the user or `undefined`
+	 * @return {string} The value of the key pressed by the user
 	 */
-	processKeyboardEvents: function( e ) {
-		const input = this.input;
-    const div = this.div;
-    const current_li = div.querySelector( 'li.highlighted' );
-    const k = standardizeKey( e );
-    
-    if( k === 'Enter' || k === 'Escape' ) {
-      e.preventDefault();
-      
-      if( k === 'Enter' ) { this.select( current_li ); }
-      input.blur();
+  standardizeKey: function( e ) {
+    let k = e.key;
+
+    switch( k ) {
+      case 'Up': k = 'ArrowUp'; break;
+      case 'Down': k = 'ArrowDown'; break;
+      case 'Esc': k = 'Escape'; break;
     }
-    else if( k === 'ArrowDown' || k === 'ArrowUp' ) {
-      let new_li = ( k === 'ArrowDown' ) ? current_li.nextElementSibling : current_li.previousElementSibling;
-      
-      // If there's a next item or a previous item
-      if( new_li ) {
-        const ul = div.firstElementChild;
 
-        this.highlight( current_li, new_li );
-
-        if( ( new_li.offsetTop + new_li.offsetHeight ) > ( ul.scrollTop + div.offsetHeight ) ) {
-          ul.scrollTop = new_li.offsetTop - ( div.offsetHeight - new_li.offsetHeight );
-        }
-        else if( new_li.offsetTop < ul.scrollTop ) {
-          ul.scrollTop = new_li.offsetTop;
-        }
-      }
-    }
-    else return k;
-
-    // Standardize event.key Edge values
-		function standardizeKey( e ) {
-			let k = e.key;
-
-			switch( k ) {
-				case 'Up': k = 'ArrowUp'; break;
-				case 'Down': k = 'ArrowDown'; break;
-				case 'Esc': k = 'Escape'; break;
-			}
-
-			return k;
-		}
-	},
+    return k;
+  },
 
   /**
    * Scroll the page if the div exceeds the viewport height.
@@ -302,7 +313,7 @@ const ComboBoxBase = {
         window.scrollBy( 0, diff );
       }
     }
-  }, 
+  },
 }
 
 ComboBox.prototype = ComboBoxBase;
