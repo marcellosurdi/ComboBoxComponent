@@ -207,7 +207,7 @@ const ComboBoxBase = {
 				// String typed by the user matches a list item
         if( pos !== -1 ) {
           rname = name.replace( new RegExp( `${ str }`, 'i' ), `<strong>${ str }</strong>` );
-          
+          // Consider first occurrence only
           if( !fid ) {
             fid = id;
           }
@@ -229,7 +229,7 @@ const ComboBoxBase = {
 		div.innerHTML = html;
 		div.style.display = 'block';
 
-    // Highligth the found item while typing, if any, or previously selected one
+    // Highligth the first found item while typing, if any, or previously selected one
     const current_id = fid || sid;
     const current_li = div.querySelector( 'li.item' + current_id );
     current_li.classList.add( 'highlighted' );
@@ -240,7 +240,7 @@ const ComboBoxBase = {
     div.firstElementChild.onmousemove = ( e ) => {
       const previous_li = div.querySelector( 'li.highlighted' );
       const current_li = e.target.closest( 'li' );
-      // `current_li` variable may not exist if mouse goes out from window
+      // `current_li` variable may not exist if mouse goes out from the window
       if( current_li && previous_li !== current_li ) {
         this.highlight( previous_li, current_li );
       }
