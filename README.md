@@ -4,28 +4,20 @@
 ## Description
 ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.
 
-## Usage
-Make sure that you have [Node.js](http://nodejs.org/) installed, then:
-1. Fork and clone the [GitHub repository](https://github.com/marcellosurdi/Webpack5Template).
-2. From the command line go to the local Webpack5Template folder.
-3. Run `npm install` and wait for the necessary modules installation. [Webpack](https://webpack.js.org/guides/installation/#root) will be installed, look at the other dev dependencies in `package.json` file.
+## Motivation
+The same motivation as always: I needed a component that didn't require any heavy dependencies. I didn't find anything that met all my needs, so I developed mine.
 
-### Development server
-```
-npm run dev
-```
-Webpack will open the development server at localhost:3001 in Chrome.
+## Compatibility
+All desktop/mobile recent browsers.
 
-### Production build
-```
-npm run build
-```
-Webpack will build compiled files in `dist` folder.
-
-### JSDoc
-```
-npm run jsdoc
-```
-After above command execution you will be able to see JSDoc documentation in `docs` folder.
+## Build
+To compile ComboBoxComponent by yourself, make sure that you have [Node.js](http://nodejs.org/) installed, then:
+1. Fork and clone the [GitHub repository](https://github.com/marcellosurdi/ComboBoxComponent).
+2. From the command line go to the local ComboBoxComponent folder.
+3. Run `npm install` and wait for the necessary modules installation. [Webpack](https://webpack.js.org/guides/installation/#root) will be installed, look at the other dev dependencies in the `package.json` file.
+4. The `npm run dev` command opens a new browser window for developing purposes, `npm run build` compiles in `dist` folder.
 
 That's it!
+
+## Do you use ComboBoxComponent?
+Let me know [with a link](mailto:marcellosurdi@gmail.com) if you've used ComboBoxComponent in some interesting way, or on a popular site.
