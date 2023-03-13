@@ -1,4 +1,7 @@
 # ComboBoxComponent
+![GitHub package.json version](https://img.shields.io/github/package-json/v/marcellosurdi/ComboBoxComponent)
+
+## Description
 ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.
 
 ## Usage
