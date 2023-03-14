@@ -22,3 +22,6 @@ That's it!
 
 ## Do you use ComboBoxComponent?
 Let me know [with a link](mailto:marcellosurdi@gmail.com) if you've used ComboBoxComponent in some interesting way, or on a popular site.
+
+## Links
+1. [Online demo](https://www.marcellosurdi.name/demo/combobox-component@latest/index.html)
