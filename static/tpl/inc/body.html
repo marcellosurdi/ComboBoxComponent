@@ -1,0 +1,148 @@
+<div id="container">
+  <div>
+
+    <h1>ComboBoxComponent</h1>
+    <img src="https://img.shields.io/github/package-json/v/marcellosurdi/ComboBoxComponent">
+    <p>
+      <a href="https://github.com/marcellosurdi/ComboBoxComponent" title="See GitHub repository">ComboBoxComponent</a> is a very lightweight and dependency-free web component written in pure JavaScript.
+    </p>
+
+    <!-- EXAMPLE 1 -->
+    <h3 id="example1">Example 1</h3>
+    <p>
+      You can pass a <code>items</code> object if you want to use <strong>default list items</strong>. You can also pass a <code>onSelect</code> callback 
+      to execute when the user select an item from list. The main use case, as you can see, is to <strong>synchronize another combobox</strong>, but it's 
+      totally up to you what to do with this callback function.
+    </p>
+    <div class="collapsible-element">
+      <code class="code-block js">
+<pre>/* offices object */
+const offices = [
+  { id: "33", name: "Alghero Aeroporto - AHO", descr: "Desk in terminal" },
+  /* ... */
+];
+
+new ComboBox( 'pickup-input', { items: offices, onSelect: sync } );
+const dropoff = new ComboBox( 'dropoff-input', { items: offices } );
+
+function sync( li ) {
+  dropoff.select( li );
+}</pre>
+      </code>
+
+      <code class="code-block html">
+<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+&lt;div class="combobox-container"&gt;
+  &lt;label for="pickup-input"&gt;Select pickup office&lt;/label&gt;
+  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;input type="text" id="pickup-input" placeholder="Enter city or airport code"&gt;
+&lt;/div&gt;
+
+&lt;div class="combobox-container"&gt;
+  &lt;label for="dropoff-input"&gt;Select dropoff office&lt;/label&gt;
+  &lt;input type="text" id="dropoff-input" placeholder="Enter city or airport code"&gt;
+&lt;/div&gt;</pre>
+      </code>
+    </div><!-- /.collapsible-element -->
+    <a href="javascript:void(0);" class="collapse" data-max-height="1000px" data-text-open="View source" data-text-close="Hide source">
+      View source
+    </a>
+    <div class="combobox-container">
+      <label for="pickup-input">Select pickup office</label>
+      <input type="text" id="pickup-input" placeholder="Enter city or airport code">
+    </div>
+
+    <div class="combobox-container">
+      <label for="dropoff-input">Select dropoff office</label>
+      <input type="text" id="dropoff-input" placeholder="Enter city or airport code">
+    </div>
+
+
+    <!-- EXAMPLE 2 -->
+    <h3 id="example2">Example 2</h3>
+    <p>
+      If you add the <code>icon: 'whatever'</code> property to <code>items</code> object and you provide a css class <code>icon-whatever</code> you will 
+      be able to <strong>use icons</strong> (available space 40x40px). You can also pass a <code>onFilter</code> callback to execute when the list is 
+      created. This callback <strong>must return a boolean</strong>: a falsy value will exclude corrisponding item. Usually there will be an additional 
+      property in your <code>items</code> object to check in the callback, in this case <code>electric_cars</code>.
+    </p>
+    <div class="collapsible-element">
+      <code class="code-block js">
+<pre>/* offices object */
+const offices2 = [
+  { id: "33", name: "Alghero Aeroporto - AHO", descr: "Desk in terminal", icon: 'airport', electric_cars: 0 },
+  /* ... */
+];
+
+new ComboBox( 'green-location', { items: offices2, onFilter: filter, highlight_color: '#ffc' } );
+function filter( item ) {
+  const { electric_cars } = item;
+  return ( electric_cars ) ? true : false;
+}</pre>
+      </code>
+
+      <code class="code-block html">
+<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+  &lt;div class="combobox-container"&gt;
+  &lt;label for="green-location"&gt;Select green location&lt;/label&gt;
+  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;input type="text" id="green-location" placeholder="Enter city or airport code"&gt;
+&lt;/div&gt;</pre>
+      </code>
+    </div><!-- /.collapsible-element -->
+    <a href="javascript:void(0);" class="collapse" data-max-height="1000px" data-text-open="View source" data-text-close="Hide source">
+      View source
+    </a>
+    <div class="combobox-container">
+      <label for="green-location">Select green location</label>
+      <input type="text" id="green-location" placeholder="Enter city or airport code">
+    </div>
+
+
+    <!-- EXAMPLE 3 -->
+    <h3 id="example3">Example 3</h3>
+    <p>
+      If <code>endpoint</code> configuration option exists you'll fetch `this.items` from a remote endpoint. Remember every single item of the json object 
+      returned must have <code>id</code>, <code>name</code> and <code>descr</code> properties or you'll get an error. For this purpose you can use 
+      <code>onFetch</code> callback to transform items.
+    </p>
+    <div class="collapsible-element">
+      <code class="code-block js">
+<pre>new ComboBox( 'itcities', { endpoint: 'http://localhost/www/www.parkandfly.com/www/api/?method=getitcities&q=', onFetch: returnItems } );
+
+function returnItems( json ) {
+  let itcities = [];
+  if( json.Status === '00' && json.Itcities ) {
+    itcities = json.Itcities.map( item => {
+      return { id: item.CC, name: item.CityName, descr: item.Descr }
+    } );
+  }
+
+  return itcities;
+}</pre>
+      </code>
+
+      <code class="code-block html">
+<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+  &lt;div class="combobox-container"&gt;
+  &lt;label for="itcities"&gt;Select an italian city&lt;/label&gt;
+  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;input type="text" id="itcities" placeholder="Type and select"&gt;
+&lt;/div&gt;</pre>
+      </code>
+    </div><!-- /.collapsible-element -->
+    <a href="javascript:void(0);" class="collapse" data-max-height="1000px" data-text-open="View source" data-text-close="Hide source">
+      View source
+    </a>
+    <div class="combobox-container">
+      <label for="itcities">Select an italian city</label>
+      <input type="text" id="itcities" placeholder="Type and select">
+    </div>
+
+
+    <div id="footer">
+      <a href="https://github.com/marcellosurdi">Marcello Surdi</a> - <a href="https://github.com/marcellosurdi/ComboBoxComponent/blob/master/LICENSE">MIT License</a>
+    </div><!-- /#footer -->
+
+  </div>
+</div><!-- /#container -->

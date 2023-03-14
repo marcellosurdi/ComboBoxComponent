@@ -16,6 +16,7 @@ To compile ComboBoxComponent by yourself, make sure that you have [Node.js](http
 2. From the command line go to the local ComboBoxComponent folder.
 3. Run `npm install` and wait for the necessary modules installation. [Webpack](https://webpack.js.org/guides/installation/#root) will be installed, look at the other dev dependencies in the `package.json` file.
 4. The `npm run dev` command opens a new browser window for developing purposes, `npm run build` compiles in `dist` folder.
+5. The `npm run jsdoc` command generates the code documentation in `docs` folder.
 
 That's it!
 

@@ -10,7 +10,7 @@ module.exports = ( env, argv ) => {
       mode: 'development',
 
       entry: {
-        main: paths.src + '/main.js',
+        main: paths.src + '/dev.js',
       }, 
 
       output: {
@@ -47,7 +47,7 @@ module.exports = ( env, argv ) => {
         new HtmlWebpackPlugin( {
           filename: 'index.html',
           title: 'index@' + version,
-          template: paths.static + '/tpl/index.html',
+          template: paths.static + '/tpl/dev.html',
         } ),           
       ],
     }

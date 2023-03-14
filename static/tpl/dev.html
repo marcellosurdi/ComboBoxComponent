@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <link href="https://www.marcellosurdi.name/demo/_shared/css/demo.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <%= require('html-loader!./inc/body.html').default %>
+
+    <script src="https://www.marcellosurdi.name/demo/_shared/js/demo.js"></script>
+  </body>
+</html>

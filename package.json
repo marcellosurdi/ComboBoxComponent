@@ -1,12 +1,12 @@
 {
   "name": "combobox-component",
   "description": "ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "keywords": [
     "lightweight",
     "autocomplete",
-    "combobox",
     "vanilla-javascript",
+    "combobox",
     "mobile-friendly"
   ],
   "main": "dist/js/combobox-component.min.js",
@@ -21,7 +21,7 @@
   "author": "Marcello Surdi <marcello.surdi@gmail.com> (https://www.marcellosurdi.name)",
   "license": "MIT",
   "scripts": {
-    "start": "webpack serve --config config/webpack.dev.js --open",
+    "dev": "webpack serve --config config/webpack.dev.js --open",
     "build": "webpack --config config/webpack.prod.js",
     "jsdoc": "jsdoc -r src -d docs -R README.md -c jsdoc.json"
   },

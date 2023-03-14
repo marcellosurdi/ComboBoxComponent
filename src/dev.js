@@ -6,7 +6,7 @@
  */
 import './css/main.css';
 import './css/combobox.scss';
-import { offices } from './js/offices';
+import { offices, offices2 } from './js/offices';
 import ComboBox from './js/ComboBox';
 
 new ComboBox( 'pickup-input', { items: offices, onSelect: sync } );
@@ -17,7 +17,7 @@ function sync( li ) {
   dropoff.select( li );
 }
 
-new ComboBox( 'green-location', { items: offices, onFilter: filter, highlight_color: '#ffc' } );
+new ComboBox( 'green-location', { items: offices2, onFilter: filter, highlight_color: '#ffc' } );
 
 function filter( item ) {
   const { electric_cars } = item;
@@ -34,6 +34,5 @@ function returnItems( json ) {
     } );
   }
 
-  // console.log(itcities);
   return itcities;
 }
