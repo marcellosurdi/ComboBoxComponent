@@ -10,9 +10,9 @@
     <!-- EXAMPLE 1 -->
     <h3 id="example1">Example 1</h3>
     <p>
-      You can pass a <code>items</code> object if you want to use <strong>default list items</strong>. You can also pass a <code>onSelect</code> callback 
-      to execute when the user select an item from list. The main use case, as you can see, is to <strong>synchronize another combobox</strong>, but it's 
-      totally up to you what to do with this callback function.
+      You can pass the <code>items</code> configuration option if you want to use <strong>default list items</strong>. You can also pass a 
+      <code>onSelect</code> callback to execute when the user select an item from list. The main use case, as you can see, is to 
+      <strong>synchronize another combobox</strong>, but it's totally up to you what to do with this callback function.
     </p>
     <div class="collapsible-element">
       <code class="code-block js">
@@ -31,10 +31,10 @@ function sync( li ) {
       </code>
 
       <code class="code-block html">
-<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+<pre>&lt;!-- Don't forget combobox-container class for the div --&gt;
 &lt;div class="combobox-container"&gt;
   &lt;label for="pickup-input"&gt;Select pickup office&lt;/label&gt;
-  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;!-- Don't forget id attribute for the input element --&gt;
   &lt;input type="text" id="pickup-input" placeholder="Enter city or airport code"&gt;
 &lt;/div&gt;
 
@@ -61,10 +61,12 @@ function sync( li ) {
     <!-- EXAMPLE 2 -->
     <h3 id="example2">Example 2</h3>
     <p>
-      If you add the <code>icon: 'whatever'</code> property to <code>items</code> object and you provide a css class <code>icon-whatever</code> you will 
-      be able to <strong>use icons</strong> (available space 40x40px). You can also pass a <code>onFilter</code> callback to execute when the list is 
-      created. This callback <strong>must return a boolean</strong>: a falsy value will exclude corrisponding item. Usually there will be an additional 
-      property in your <code>items</code> object to check in the callback, in this case <code>electric_cars</code>.
+      If you add the <code>icon: 'whatever'</code> property to <code>items</code> configuration object and you provide a css class 
+      <code>icon-whatever</code> you will be able to <strong>use icons</strong> (available space 40x40px). You can also pass a 
+      <code>onFilter</code> callback as a configuration option to execute when the list is created. This callback <strong>must return a 
+      boolean</strong>: a falsy value will exclude corrisponding item. Usually there will be an additional property in your <code>items</code> 
+      object to check in the callback, in this case <code>electric_cars</code>. Finally, the optional <code>highlight_color</code> option 
+      will change the background color for highlighted items.
     </p>
     <div class="collapsible-element">
       <code class="code-block js">
@@ -82,10 +84,10 @@ function filter( item ) {
       </code>
 
       <code class="code-block html">
-<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+<pre>&lt;!-- Don't forget combobox-container class for the div --&gt;
   &lt;div class="combobox-container"&gt;
   &lt;label for="green-location"&gt;Select green location&lt;/label&gt;
-  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;!-- Don't forget id attribute for the input element --&gt;
   &lt;input type="text" id="green-location" placeholder="Enter city or airport code"&gt;
 &lt;/div&gt;</pre>
       </code>
@@ -102,13 +104,14 @@ function filter( item ) {
     <!-- EXAMPLE 3 -->
     <h3 id="example3">Example 3</h3>
     <p>
-      If <code>endpoint</code> configuration option exists you'll fetch `this.items` from a remote endpoint. Remember every single item of the json object 
-      returned must have <code>id</code>, <code>name</code> and <code>descr</code> properties or you'll get an error. For this purpose you can use 
-      <code>onFetch</code> callback to transform items.
+      If <code>endpoint</code> configuration option exists, you'll fetch <code>items</code> <strong>from a remote endpoint</strong>. The 
+      component will append the string typed by the user to the end of the endpoint URL. Remember: every single item of the JSON object returned 
+      must have <code>id</code>, <code>name</code> and <code>descr</code> properties or you'll get an error. To transform items you can use 
+      <code>onFetch</code> callback.
     </p>
     <div class="collapsible-element">
       <code class="code-block js">
-<pre>new ComboBox( 'itcities', { endpoint: 'http://localhost/www/www.parkandfly.com/www/api/?method=getitcities&q=', onFetch: returnItems } );
+<pre>new ComboBox( 'itcities', { endpoint: 'http://yourdomain.com/endpoint/', onFetch: returnItems } );
 
 function returnItems( json ) {
   let itcities = [];
@@ -123,10 +126,10 @@ function returnItems( json ) {
       </code>
 
       <code class="code-block html">
-<pre>&lt;!-- Dont' forget combobox-container class for the div --&gt;
+<pre>&lt;!-- Don't forget combobox-container class for the div --&gt;
   &lt;div class="combobox-container"&gt;
   &lt;label for="itcities"&gt;Select an italian city&lt;/label&gt;
-  &lt;!-- Dont' forget id attribute for the input element --&gt;
+  &lt;!-- Don't forget id attribute for the input element --&gt;
   &lt;input type="text" id="itcities" placeholder="Type and select"&gt;
 &lt;/div&gt;</pre>
       </code>

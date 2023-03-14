@@ -5,6 +5,8 @@
 ComboBoxComponent is a very lightweight (just over 7KB) and dependency-free web component written in pure JavaScript. 
 [See the online demo](https://www.marcellosurdi.name/demo/combobox-component@latest/index.html).
 
+![Combo box](https://www.marcellosurdi.name/demo/combobox-component@latest/img/screenshot-combobox.png "Combo box")
+
 ## Motivation
 The same motivation as always: I needed a component that didn't require any heavy dependencies. I didn't find anything that met all my needs, so I developed mine.
 
