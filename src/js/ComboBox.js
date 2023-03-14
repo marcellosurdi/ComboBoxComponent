@@ -1,11 +1,20 @@
 /**
+ * @module js/combobox
+ * @author Marcello Surdi
+ * 
+ * @desc Source code
+ */
+
+/**
+ * @class
+ * 
+ * @classdesc
  * Create a new ComboBox instance for the text field selected by `id` parameter.
  * 
- * @class
  * @param {string} id Text field id value
- * @param {options} [options] Configuration object
+ * @param {object} [options] Configuration object
  */
-export default function ComboBox( id, options = {} ) {
+export function ComboBox( id, options = {} ) {
   const input = document.querySelector( `input#${ id }[type="text"]` );
   if( input === null ) {
     console.error( "Please provide a text field valid id ('type' html attribute must be set to 'text')" );
@@ -44,6 +53,7 @@ export default function ComboBox( id, options = {} ) {
 
 /**
  * Prototype for ComboBox instances.
+ * @namespace ComboBoxBase
  */
 const ComboBoxBase = {
   constructor: ComboBox,
