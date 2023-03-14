@@ -50,7 +50,7 @@ module.exports = ( env, argv ) => {
 
         new HtmlWebpackPlugin({
           filename: 'index.html',
-          title: 'index@' + version,
+          title: 'combobox-component@' + version,
           template: paths.static + '/tpl/export.html',
           inject: false,
           minify: false,
