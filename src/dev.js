@@ -1,4 +1,3 @@
-import './css/main.css';
 import './css/combobox.scss';
 import { offices, offices2 } from './js/offices';
 import { ComboBox } from './js/ComboBox';
