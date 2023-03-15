@@ -31,7 +31,7 @@ export function ComboBox( id, options = {} ) {
   this.highlight_color = options.highlight_color || '';
 
   input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value data-item-name>` );
-  input.insertAdjacentHTML( 'afterend', `<div id="${ input.id }-div" class="combobox"></div>`);
+  input.insertAdjacentHTML( 'afterend', `<div id="${ input.id }-div" class="combobox" style="display: none;"></div>`);
 
   // Hidden input that will contain selected item id and name
   this.hinput = input.previousElementSibling;
@@ -61,10 +61,8 @@ const ComboBoxBase = {
  	/**
 	 * Open the list.
 	 */
-  onFocus: function( e ) { 
-    if( e.relatedTarget && this.ul && e.relatedTarget === this.ul ) return;
-
-    this.open();
+  onFocus: function( e ) {
+    if( this.div.style.display == 'none' ) this.open();
   },
 
 	/**
@@ -78,7 +76,7 @@ const ComboBoxBase = {
 		const input = this.input;
     const div = this.div;
     const current_li = div.querySelector( 'li.highlighted' );
-    // `current_li` element isn't available because `this.div` wasn't inizialized yet
+    // `current_li` element isn't available because `this.div` may not be initialized yet
     if( !current_li ) return;
 
     
@@ -165,7 +163,7 @@ const ComboBoxBase = {
     const rt = e.relatedTarget;
 
     // User wants to use the scroll bar on desktop devices or clicked on an item on iOS devices
-    if( rt === this.ul )  return;
+    if( rt === this.div.firstElementChild )  return;
 
     if( rt !== this.input ) {
       this.onClick( rt );
@@ -262,11 +260,11 @@ const ComboBoxBase = {
     const current_li = div.querySelector( 'li.item' + current_id );
     current_li.classList.add( 'highlighted' );
 
-    this.ul = div.firstElementChild;
+    const ul = div.firstElementChild;
     // Show highlighted item first in the list
-    this.ul.scrollTop = current_li.offsetTop;
+    ul.scrollTop = current_li.offsetTop;
 
-    this.ul.onmousemove = ( e ) => {
+    ul.onmousemove = ( e ) => {
       const previous_li = div.querySelector( 'li.highlighted' );
       const current_li = e.target.closest( 'li' );
       // `current_li` variable may not exist if mouse goes out from the window
@@ -277,14 +275,14 @@ const ComboBoxBase = {
 
     // Allow the user to use the scroll bar on desktop devices
     let timer = 0;
-    this.ul.onscroll = () => {
+    ul.onscroll = () => {
       if( timer !== 0 ) clearTimeout( timer );
 
       timer = setTimeout( () => this.input.focus(), 100 );
     }
 
     // Allow the user to select item on iOS devices
-    this.ul.onclick = ( e ) => this.onClick.call( this, e.target );
+    ul.onclick = ( e ) => this.onClick.call( this, e.target );
 
     this.scrollPage( div );
   },
