@@ -1,4 +1,5 @@
 import './css/combobox.scss';
+import { icons } from './img/icons.svg';
 import { offices, offices2 } from './js/offices';
 import { ComboBox } from './js/ComboBox';
 

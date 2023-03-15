@@ -45,7 +45,7 @@ export function ComboBox( id, options = {} ) {
     );
   }
 
-  input.addEventListener( 'focus', () => { this.onFocus() } );
+  input.addEventListener( 'focus', ( e ) => { this.onFocus( e ) } );
   input.addEventListener( 'keydown', ( e ) => { this.onKeyDown( e ) } );
   input.addEventListener( 'keyup', ( e ) => { this.onKeyUp( e ) } );
   input.addEventListener( 'blur', ( e ) => { this.onBlur( e ) } );
@@ -61,7 +61,9 @@ const ComboBoxBase = {
  	/**
 	 * Open the list.
 	 */
-  onFocus: function() { 
+  onFocus: function( e ) { 
+    if( e.relatedTarget && this.ul && e.relatedTarget === this.ul ) return;
+
     this.open();
   },
 
@@ -154,7 +156,7 @@ const ComboBoxBase = {
   },
 
  	/**
-	 * Close the list.
+	 * Handle blur events.
 	 *
 	 * @param {FocusEvent} e
 	 */
@@ -162,20 +164,36 @@ const ComboBoxBase = {
     // https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function/57983847#57983847
     const rt = e.relatedTarget;
 
+    // User wants to use the scroll bar on desktop devices or clicked on an item on iOS devices
+    if( rt === this.ul )  return;
+
     if( rt !== this.input ) {
-      // Close list
-      this.div.style.display = 'none';
+      this.onClick( rt );
+    }
+  },
 
-      // If the user clicked on a `li > button`
-      if( rt && rt.classList.contains( 'combobox-button' ) ) {
-        const previous_li = this.div.querySelector( 'li.highlighted' );
-        const current_li = rt.parentElement;
-        this.highlight( previous_li, current_li );
-        this.select( current_li );
-      }
+ 	/**
+	 * Close the list and select current item.
+	 *
+	 * @param {HTMLElement} el `relatedTarget` property for blur events or `target` property for click events
+	 */
+  onClick: function ( el ) {
+    // Close list
+    this.div.style.display = 'none';
+    // Restore the text field value if the user cleared it (even partially) without making a new selection
+    this.input.value = this.hinput.dataset.itemName;
 
-      // Restore the text field value if the user cleared it (even partially) without making a new selection
-      this.input.value = this.hinput.dataset.itemName;
+    // `e.relatedTarget` on blur event may be `null`
+    if( !el ) return;
+
+    // The user clicked on a child `<span>` of `<button>`
+    if( el.tagName.toUpperCase() !== 'BUTTON'  ) el = el.parentElement;
+
+    if( el.classList.contains( 'combobox-button' ) ) {
+      const previous_li = this.div.querySelector( 'li.highlighted' );
+      const current_li = el.parentElement;
+      this.highlight( previous_li, current_li );
+      this.select( current_li );
     }
   },
 
@@ -244,10 +262,11 @@ const ComboBoxBase = {
     const current_li = div.querySelector( 'li.item' + current_id );
     current_li.classList.add( 'highlighted' );
 
+    this.ul = div.firstElementChild;
     // Show highlighted item first in the list
-    div.firstElementChild.scrollTop = current_li.offsetTop;
+    this.ul.scrollTop = current_li.offsetTop;
 
-    div.firstElementChild.onmousemove = ( e ) => {
+    this.ul.onmousemove = ( e ) => {
       const previous_li = div.querySelector( 'li.highlighted' );
       const current_li = e.target.closest( 'li' );
       // `current_li` variable may not exist if mouse goes out from the window
@@ -255,6 +274,17 @@ const ComboBoxBase = {
         this.highlight( previous_li, current_li );
       }
     };
+
+    // Allow the user to use the scroll bar on desktop devices
+    let timer = 0;
+    this.ul.onscroll = () => {
+      if( timer !== 0 ) clearTimeout( timer );
+
+      timer = setTimeout( () => this.input.focus(), 100 );
+    }
+
+    // Allow the user to select item on iOS devices
+    this.ul.onclick = ( e ) => this.onClick.call( this, e.target );
 
     this.scrollPage( div );
   },

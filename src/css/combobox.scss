@@ -5,16 +5,14 @@ div.combobox-container {
   input { width: 100%; }
 }
 div.combobox {
-  position: absolute; display: block; z-index: 2; width: 100%; background-color: #fff;
+  position: absolute; display: block; box-shadow: 0 1px 10px #666; z-index: 99; width: 100%; background-color: #fff;
 
-  * { box-sizing: border-box; }
-  
-  ul { margin: 0; padding: 0; border-radius: 0 0 5px 5px; outline: 0; box-shadow: 0 1px 10px #555; max-height: 240px; overflow: auto; list-style-type: none; }
+  ul { margin: 0; padding: 0; border-radius: 0 0 5px 5px; outline: 0; max-height: 240px; overflow: auto; list-style-type: none; }
   
   li:nth-child(odd) { background: #eee; }
   li.highlighted { background: #d9e8d9; }
   
-  li button { display: block; position: relative; border: none; margin: 0; background: transparent; width: 100%; height: 40px; padding: 2px 5px; text-align: left; cursor: pointer; }
+  li button { display: block; position: relative; border: none; margin: 0; background: transparent; width: 100%; height: 40px; padding: 2px 5px; text-align: left; cursor: pointer; color: #000; }
   li button span { display: block; }
   li button span[class^="icon-"] { position: absolute; top: 0; right: 0; width: 40px; height: 40px; }
   li button span.item-name { font-size: 16px; font-variant: small-caps; text-transform: lowercase; }
