@@ -65,6 +65,10 @@ const ComboBoxBase = {
     if( this.div.style.display == 'none' ) this.open();
   },
 
+
+
+
+
 	/**
 	 * Process `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys when keydown events are fired.
 	 *
@@ -104,6 +108,10 @@ const ComboBoxBase = {
       }
     }
 	},
+
+
+
+
 
 	/**
 	 * Update the list according to user input, if `this.endpoint` configuration option exists try to fetch `this.items` from a remote endpoint 
@@ -153,6 +161,10 @@ const ComboBoxBase = {
 		}
   },
 
+
+
+
+
  	/**
 	 * Handle blur events.
 	 *
@@ -170,6 +182,10 @@ const ComboBoxBase = {
     }
   },
 
+
+
+
+
  	/**
 	 * Close the list and select current item.
 	 *
@@ -185,7 +201,7 @@ const ComboBoxBase = {
     if( !el ) return;
 
     // The user clicked on a child `<span>` of `<button>`
-    if( el.tagName.toUpperCase() !== 'BUTTON'  ) el = el.parentElement;
+    if( el.tagName.toUpperCase() !== 'BUTTON' ) el = el.parentElement;
 
     if( el.classList.contains( 'combobox-button' ) ) {
       const previous_li = this.div.querySelector( 'li.highlighted' );
@@ -194,6 +210,10 @@ const ComboBoxBase = {
       this.select( current_li );
     }
   },
+
+
+
+
 
 	/**
 	 * Create the list from `this.items` and show it (this method is executed whenever the text field receives the focus 
@@ -287,6 +307,10 @@ const ComboBoxBase = {
     this.scrollPage( div );
   },
 
+
+
+
+
  	/**
    * Remove `highlighted` class in the previous `li` item and add it in the current one (when user hovers the mouse over an item, or click on 
    * it, or uses the arrow up or arrow down keys on the keyboard).
@@ -298,6 +322,10 @@ const ComboBoxBase = {
     previous_li.classList.remove( 'highlighted' );
     current_li.classList.add( 'highlighted' );
   },
+
+
+
+
 
  	/**
 	 * Select an item and execute `this.onSelect` if any.
@@ -311,6 +339,10 @@ const ComboBoxBase = {
 
     if( this.onSelect ) this.onSelect( li );
   },
+
+
+
+
 
 	/**
 	 * Standardize event.key Edge values.
@@ -329,6 +361,10 @@ const ComboBoxBase = {
 
     return k;
   },
+
+
+
+
 
   /**
    * Scroll the page if the div exceeds the viewport height.
