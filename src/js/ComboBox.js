@@ -37,7 +37,7 @@ export function ComboBox( id, options = {} ) {
   this.hinput = input.previousElementSibling;
   // Div element that will contain the list
   this.div = input.nextElementSibling;
-  // Set custom highlight color if any
+  // Set custom highlight background color if any
   if( this.highlight_color ) {
     this.div.insertAdjacentHTML( 
       'afterend', 
@@ -45,11 +45,15 @@ export function ComboBox( id, options = {} ) {
     );
   }
 
-  input.addEventListener( 'focus', ( e ) => { this.onFocus( e ) } );
+  input.addEventListener( 'focus', () => { this.onFocus() } );
   input.addEventListener( 'keydown', ( e ) => { this.onKeyDown( e ) } );
   input.addEventListener( 'keyup', ( e ) => { this.onKeyUp( e ) } );
   input.addEventListener( 'blur', ( e ) => { this.onBlur( e ) } );
 }
+
+
+
+
 
 /**
  * Prototype for ComboBox instances.
@@ -61,7 +65,7 @@ const ComboBoxBase = {
  	/**
 	 * Open the list.
 	 */
-  onFocus: function( e ) {
+  onFocus: function() {
     if( this.div.style.display == 'none' ) this.open();
   },
 
@@ -293,13 +297,8 @@ const ComboBoxBase = {
       }
     };
 
-    // Allow the user to use the scroll bar on desktop devices
-    let timer = 0;
-    ul.onscroll = () => {
-      if( timer !== 0 ) clearTimeout( timer );
-
-      timer = setTimeout( () => this.input.focus(), 100 );
-    }
+    // Allow the user to use the scrollbar on desktop devices without losing focus in the text field
+    ul.onscroll = () => setTimeout( () => this.input.focus(), 10 );
 
     // Allow the user to select item on iOS devices
     ul.onclick = ( e ) => this.onClick.call( this, e.target );
