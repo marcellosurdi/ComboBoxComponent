@@ -11,7 +11,7 @@
     <h3 id="example1">Example 1</h3>
     <p>
       You can pass the <code>items</code> configuration option if you want to use <strong>default list items</strong>. You can also pass a 
-      <code>onSelect</code> callback to execute when the user select an item from list. The main use case, as you can see, is to 
+      <code>onSelect</code> callback to execute when the user select an item from the list. The main use case, as you can see, is to 
       <strong>synchronize another combobox</strong>, but it's totally up to you what to do with this callback function.
     </p>
     <div class="collapsible-element">
@@ -63,7 +63,7 @@ function sync( li ) {
     <p>
       If you add the <code>icon: 'whatever'</code> property to <code>items</code> configuration object and you provide a css class 
       <code>icon-whatever</code> you will be able to <strong>use icons</strong> (available space 40x40px). You can also pass a 
-      <code>onFilter</code> callback as a configuration option to execute when the list is created. This callback <strong>must return a 
+      <code>onFilter</code> callback as a configuration option to execute when the list is created/updated. This callback <strong>must return a 
       boolean</strong>: a falsy value will exclude corrisponding item. Usually there will be an additional property in your <code>items</code> 
       object to check in the callback, in this case <code>electric_cars</code>. Finally, the optional <code>highlight_color</code> option 
       will change the background color for highlighted items.

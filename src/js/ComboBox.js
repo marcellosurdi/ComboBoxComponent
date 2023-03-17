@@ -12,7 +12,7 @@
  * Create a new ComboBox instance for the text field selected by `id` parameter.
  * 
  * @param {string} id Text field id value
- * @param {object} [options] Configuration object
+ * @param {ComboBoxOptions} [options] {@linkcode module:js/combobox.ComboBoxOptionsNS|ComboBoxOptions} configuration object
  */
 export function ComboBox( id, options = {} ) {
   const input = document.querySelector( `input#${ id }[type="text"]` );
@@ -22,12 +22,13 @@ export function ComboBox( id, options = {} ) {
   }
 
   this.input = input;
+  this.controller = undefined;
+
   this.items = options.items || [];
   this.onSelect = options.onSelect || null;
   this.onFilter = options.onFilter || null;
   this.onFetch = options.onFetch || null;
   this.endpoint = options.endpoint || '';
-  this.controller = undefined;
   this.highlight_color = options.highlight_color || '';
 
   input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value data-item-name>` );
@@ -56,6 +57,28 @@ export function ComboBox( id, options = {} ) {
 
 
 /**
+ * Configuration option parameter
+ * @namespace ComboBoxOptionsNS
+ * @memberof module:js/combobox
+ */
+
+/**
+ * @typedef {object} ComboBoxOptions
+ * @memberof module:js/combobox.ComboBoxOptionsNS
+ *
+ * @property {array} items Default list items
+ * @property {function} onSelect Callback to execute when user select an item from the list
+ * @property {function} onFilter Callback to execute when the list is created/updated
+ * @property {function} onFetch Callback to execute to transform items retrieved from remote endpoint
+ * @property {string} endpoint Remote endpoint
+ * @property {string} highlight_color Background color for highlighted items (any CSS value)
+ */
+
+
+
+
+
+/**
  * Prototype for ComboBox instances.
  * @namespace ComboBoxBase
  */
@@ -64,9 +87,11 @@ const ComboBoxBase = {
 
  	/**
 	 * Open the list.
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.update|update}
 	 */
   onFocus: function() {
-    if( this.div.style.display == 'none' ) this.open();
+    if( this.div.style.display == 'none' ) this.update();
   },
 
 
@@ -77,6 +102,8 @@ const ComboBoxBase = {
 	 * Process `Enter`, `Escape`, `ArrowUp` and `ArrowDown` keys when keydown events are fired.
 	 *
 	 * @param {KeyboardEvent} e
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.standardizeKey|standardizeKey}
 	 */
 	onKeyDown: function( e ) {
     const k = this.standardizeKey( e );
@@ -122,6 +149,9 @@ const ComboBoxBase = {
    * and then update the list.
 	 *
 	 * @param {KeyboardEvent} e
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.standardizeKey|standardizeKey}
+   * @see {@linkcode module:js/combobox~ComboBoxBase.update|update}
 	 */
   onKeyUp: function ( e ) {
     const k = this.standardizeKey( e );
@@ -149,7 +179,7 @@ const ComboBoxBase = {
           .then( r => r.json() )
           .then( json => {
             this.items = this.onFetch ? this.onFetch( json ) : json;
-            this.open();
+            this.update();
           } )
           .catch( e => {
             if( e.name === 'AbortError' ) {
@@ -161,7 +191,7 @@ const ComboBoxBase = {
       }
     }
 		else {
-			this.open();
+			this.update();
 		}
   },
 
@@ -173,6 +203,8 @@ const ComboBoxBase = {
 	 * Handle blur events.
 	 *
 	 * @param {FocusEvent} e
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.onClick|onClick}
 	 */
    onBlur: function ( e ) {
     // https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function/57983847#57983847
@@ -191,11 +223,15 @@ const ComboBoxBase = {
 
 
  	/**
-	 * Close the list and select current item.
+	 * Close the list and select current item if any.
 	 *
 	 * @param {HTMLElement} el `relatedTarget` property for blur events or `target` property for click events
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.highlight|highlight}
+   * @see {@linkcode module:js/combobox~ComboBoxBase.select|select}
 	 */
   onClick: function ( el ) {
+    console.log(el);
     // Close list
     this.div.style.display = 'none';
     // Restore the text field value if the user cleared it (even partially) without making a new selection
@@ -205,7 +241,7 @@ const ComboBoxBase = {
     if( !el ) return;
 
     // The user clicked on a child `<span>` of `<button>`
-    if( el.tagName.toUpperCase() !== 'BUTTON' ) el = el.parentElement;
+    if( el.parentElement.classList.contains( 'combobox-button' ) ) el = el.parentElement;
 
     if( el.classList.contains( 'combobox-button' ) ) {
       const previous_li = this.div.querySelector( 'li.highlighted' );
@@ -220,10 +256,14 @@ const ComboBoxBase = {
 
 
 	/**
-	 * Create the list from `this.items` and show it (this method is executed whenever the text field receives the focus 
-   * or user types something). Execute `this.onFilter` if any.
+	 * Create/update the list from `this.items` and show it (this method is executed whenever the text field receives the 
+   * focus or user types some text). Execute `this.onFilter` if any.
+   * 
+   * @see {@linkcode module:js/combobox~ComboBoxBase.highlight|highlight}
+   * @see {@linkcode module:js/combobox~ComboBoxBase.onClick|onClick}
+   * @see {@linkcode module:js/combobox~ComboBoxBase.scrollPage|scrollPage}
 	 */
-  open: function() {
+  update: function() {
     const items = this.items;
     // Return if `this.items` are less than 0
     if( items.length === 0 ) return;
@@ -298,7 +338,7 @@ const ComboBoxBase = {
     };
 
     // Allow the user to use the scrollbar on desktop devices without losing focus in the text field
-    ul.onscroll = () => setTimeout( () => this.input.focus(), 10 );
+    ul.onscroll = () => setTimeout( () => this.input.focus(), 0 );
 
     // Allow the user to select item on iOS devices
     ul.onclick = ( e ) => this.onClick.call( this, e.target );
