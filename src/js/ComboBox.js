@@ -231,7 +231,6 @@ const ComboBoxBase = {
    * @see {@linkcode module:js/combobox~ComboBoxBase.select|select}
 	 */
   onClick: function ( el ) {
-    console.log(el);
     // Close list
     this.div.style.display = 'none';
     // Restore the text field value if the user cleared it (even partially) without making a new selection
