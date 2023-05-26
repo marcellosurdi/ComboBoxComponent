@@ -21,6 +21,12 @@ export function ComboBox( id, options = {} ) {
     return;
   }
 
+  // Wrap input into a div container with relative positioning
+  const div_container = document.createElement( 'DIV' );
+  div_container.style.position = 'relative';
+  input.parentElement.insertBefore( div_container, input );
+  div_container.appendChild( input );
+
   this.input = input;
   this.controller = undefined;
 
