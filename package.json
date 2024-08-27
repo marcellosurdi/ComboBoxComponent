@@ -1,7 +1,7 @@
 {
   "name": "combobox-component",
   "description": "ComboBoxComponent is a very lightweight and dependency-free web component written in pure JavaScript.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "keywords": [
     "lightweight",
     "autocomplete",
@@ -39,7 +39,7 @@
     "html-webpack-plugin": "^5.5.0",
     "jsdoc": "^3.6.7",
     "mini-css-extract-plugin": "^2.4.5",
-    "node-sass": "^7.0.0",
+    "node-sass": "^9.0.0",
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
     "webpack": "^5.65.0",

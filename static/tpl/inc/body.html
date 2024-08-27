@@ -143,6 +143,47 @@ function returnItems( json ) {
     </div>
 
 
+    <h3 id="example4">Example 4</h3>
+    <p>
+      To <strong>set a default value</strong> after a page reload due, for instance, to a failed validation, you can add the 
+      <code>data-item-id</code> and the <code>data-item-name</code> attributes on the text field to which the combobox is associated.
+    </p>
+    <p>
+      The component will detect these attributes, and use them to provide default value. This may be useful if you are a server 
+      side developer and you can't access separate js files of your application.
+    </p>
+    <div class="collapsible-element">
+      <code class="code-block js">
+<pre>/* offices object */
+const offices2 = [
+  { id: "33", name: "Alghero Aeroporto - AHO", descr: "Desk in terminal", icon: 'airport', electric_cars: 0 },
+  /* ... */
+];
+
+new ComboBox( 'green-location-2', { items: offices2, onFilter: filter, highlight_color: '#ffc' } );
+function filter( item ) {
+  const { electric_cars } = item;
+  return ( electric_cars ) ? true : false;
+}</pre>
+      </code>
+
+      <code class="code-block html">
+<pre>&lt;!-- Don't forget the combobox-container class for the div --&gt;
+  &lt;div class="combobox-container"&gt;
+  &lt;label for="green-location-2"&gt;Select green location&lt;/label&gt;
+  &lt;!-- Don't forget id attribute for the input element --&gt;
+  &lt;input type="text" id="green-location" placeholder="Enter city or airport code" data-item-id="51" data-item-name="Brescia"&gt;
+&lt;/div&gt;</pre>
+      </code>
+    </div><!-- /.collapsible-element -->
+    <a href="javascript:void(0);" class="collapse" data-max-height="1000px" data-text-open="View source" data-text-close="Hide source">
+      View source
+    </a>
+    <div class="combobox-container">
+      <label for="green-location-2">Select green location</label>
+      <input type="text" id="green-location-2" placeholder="Enter city or airport code" data-item-id="51" data-item-name="Brescia">
+    </div>
+
     <div id="footer">
       <a href="https://github.com/marcellosurdi">Marcello Surdi</a> - <a href="https://github.com/marcellosurdi/ComboBoxComponent/blob/master/LICENSE">MIT License</a>
     </div><!-- /#footer -->

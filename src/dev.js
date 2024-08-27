@@ -30,3 +30,5 @@ function returnItems( json ) {
 
   return itcities;
 }
+
+new ComboBox( 'green-location-2', { items: offices2, onFilter: filter, highlight_color: '#ffc' } );

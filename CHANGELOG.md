@@ -1,6 +1,10 @@
 # Change Log
 All **notable changes** to this project will be documented in this file.
 
+## [1.0.8] - 2024-08-27
+### Added
+- Default value for text input to which the combobox is associated.
+
 ## [1.0.6] - 2023-03-17
 ### Changed
 - Scrolling without mouse wheel on desktop devices.
@@ -8,7 +12,6 @@ All **notable changes** to this project will be documented in this file.
 
 ## [1.0.5] - 2023-03-15
 ### Fixed
-- Scrolling without mouse wheel on desktop devices.
 - Item selection on iOS devices.
 - Buttons text color on iOS devices.
 - Icons in demo.

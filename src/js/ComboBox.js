@@ -20,6 +20,8 @@ export function ComboBox( id, options = {} ) {
     console.error( "Please provide a text field valid id ('type' html attribute must be set to 'text')" );
     return;
   }
+  const prev_id = input.dataset.itemId !== undefined ? input.dataset.itemId : '';
+  const prev_value = input.dataset.itemName !== undefined ? input.dataset.itemName : '';
 
   // Wrap input into a div container with relative positioning
   const div_container = document.createElement( 'DIV' );
@@ -37,11 +39,13 @@ export function ComboBox( id, options = {} ) {
   this.endpoint = options.endpoint || '';
   this.highlight_color = options.highlight_color || '';
 
-  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value data-item-name>` );
+  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value="${ prev_id }" data-item-name="${ prev_value }">` );
   input.insertAdjacentHTML( 'afterend', `<div id="${ input.id }-div" class="combobox" style="display: none;"></div>`);
 
   // Hidden input that will contain selected item id and name
   this.hinput = input.previousElementSibling;
+  // Set a default value for text input to which the combobox is associated
+  this.input.value = prev_value;
   // Div element that will contain the list
   this.div = input.nextElementSibling;
   // Set custom highlight background color if any
