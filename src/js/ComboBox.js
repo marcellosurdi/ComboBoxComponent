@@ -39,7 +39,7 @@ export function ComboBox( id, options = {} ) {
   this.endpoint = options.endpoint || '';
   this.highlight_color = options.highlight_color || '';
 
-  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }-hinput" name="${ input.id }-hinput" value="${ prev_id }" data-item-name="${ prev_value }">` );
+  input.insertAdjacentHTML( 'beforebegin', `<input type="hidden" id="${ input.id }_hinput" name="${ input.id }_hinput" value="${ prev_id }" data-item-name="${ prev_value }">` );
   input.insertAdjacentHTML( 'afterend', `<div id="${ input.id }-div" class="combobox" style="display: none;"></div>`);
 
   // Hidden input that will contain selected item id and name
